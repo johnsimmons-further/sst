@@ -99,6 +99,8 @@ async function getTargetOffers(req, res, mboxNames) {
       targetCookie
     });
 
+    console.log('🎄 Target response:', JSON.stringify(response));
+
     // Save the Target cookie for session tracking
     saveTargetCookie(res, response.targetCookie);
 

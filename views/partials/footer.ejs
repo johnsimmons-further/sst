@@ -71,6 +71,7 @@
     window.adobeTargetPropositions = (window.adobeTargetA4T || [])
       .filter(function(item) { return item.activityId; })
       .map(function(item) {
+        console.log(item);
         return {
           // AT:base64-encoded JSON with activityId + experienceId
           id: item.propositionId,
@@ -86,22 +87,12 @@
               id: item.experienceId,
               name: item.experienceName
             },
+            characteristics: {
+                analyticsToken: item.analyticsPayload?.tnta || null 
+              }
           }
         };
       });
-
-    // Complete XDM payload ready for alloy("sendEvent", ...) in Launch
-    window.adobeTargetDisplayEventXDM = {
-      eventType: 'decisioning.propositionDisplay',
-      _experience: {
-        decisioning: {
-          propositions: window.adobeTargetPropositions,
-          propositionEventType: {
-            display: 1
-          }
-        }
-      }
-    };
   </script>
 
   <footer>
