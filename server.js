@@ -116,12 +116,21 @@ async function getTargetOffers(req, res, mboxNames) {
           activityId: null,
           experienceId: null,
           analyticsPayload: null,
-          responseTokens: {}
+          responseTokens: {},
+          // Web SDK proposition fields
+          propositionId: null,
+          scopeDetailsId: null,
+          eventToken: null
         };
 
         // Get analytics payload from mbox options
         if (mbox.options?.[0]) {
           const option = mbox.options[0];
+
+          // Capture eventToken if present (used for display notifications)
+          if (option.eventToken) {
+            mboxAnalytics.eventToken = option.eventToken;
+          }
 
           // Response tokens contain activity/experience metadata
           if (option.responseTokens) {
@@ -132,6 +141,23 @@ async function getTargetOffers(req, res, mboxNames) {
             mboxAnalytics.experienceName = option.responseTokens['experience.name'];
             mboxAnalytics.offerId = option.responseTokens['offer.id'];
             mboxAnalytics.offerName = option.responseTokens['offer.name'];
+
+            // Generate Web SDK proposition ID in AT:base64 format
+            if (mboxAnalytics.activityId && mboxAnalytics.experienceId !== null) {
+              const propositionPayload = JSON.stringify({
+                activityId: mboxAnalytics.activityId,
+                experienceId: mboxAnalytics.experienceId
+              });
+              mboxAnalytics.propositionId = 'AT:' + Buffer.from(propositionPayload).toString('base64');
+
+              // scopeDetails.id uses similar format
+              const scopeDetailsPayload = JSON.stringify({
+                activityId: mboxAnalytics.activityId,
+                experienceId: mboxAnalytics.experienceId,
+                targetType: '0'
+              });
+              mboxAnalytics.scopeDetailsId = 'AT:' + Buffer.from(scopeDetailsPayload).toString('base64');
+            }
           }
         }
 
@@ -191,38 +217,38 @@ app.use((req, res, next) => {
 // Routes
 app.get('/', async (req, res) => {
   // Request personalized content from Adobe Target (including redirect mbox)
-  const targetResponse = await req.getTargetOffers(['homepage-redirect', 'homepage-hero']);
+  const targetResponse = await req.getTargetOffers(['homepage-hero']);
   const { offers, analytics, isDemo } = targetResponse;
 
   // Check for redirect offer first
-  const redirectOffer = offers['homepage-redirect'];
-  if (redirectOffer?.type === 'redirect' && redirectOffer?.redirectUrl) {
-    // Build redirect URL with A4T activity data for the landing page
-    const redirectUrl = new URL(redirectOffer.redirectUrl, `${req.protocol}://${req.get('host')}`);
+  // const redirectOffer = offers['homepage-redirect'];
+  // if (redirectOffer?.type === 'redirect' && redirectOffer?.redirectUrl) {
+  //   // Build redirect URL with A4T activity data for the landing page
+  //   const redirectUrl = new URL(redirectOffer.redirectUrl, `${req.protocol}://${req.get('host')}`);
 
-    // Append activity/experience info for A4T stitching on landing page
-    const a4tData = redirectOffer.analytics || {};
-    if (a4tData.activityId) {
-      redirectUrl.searchParams.set('at_activityId', a4tData.activityId);
-    }
-    if (a4tData.activityName) {
-      redirectUrl.searchParams.set('at_activityName', a4tData.activityName);
-    }
-    if (a4tData.experienceId) {
-      redirectUrl.searchParams.set('at_experienceId', a4tData.experienceId);
-    }
-    if (a4tData.experienceName) {
-      redirectUrl.searchParams.set('at_experienceName', a4tData.experienceName);
-    }
-    if (a4tData.offerId) {
-      redirectUrl.searchParams.set('at_offerId', a4tData.offerId);
-    }
-    if (a4tData.analyticsPayload?.tnta) {
-      redirectUrl.searchParams.set('at_tnta', a4tData.analyticsPayload.tnta);
-    }
+  //   // Append activity/experience info for A4T stitching on landing page
+  //   const a4tData = redirectOffer.analytics || {};
+  //   if (a4tData.activityId) {
+  //     redirectUrl.searchParams.set('at_activityId', a4tData.activityId);
+  //   }
+  //   if (a4tData.activityName) {
+  //     redirectUrl.searchParams.set('at_activityName', a4tData.activityName);
+  //   }
+  //   if (a4tData.experienceId) {
+  //     redirectUrl.searchParams.set('at_experienceId', a4tData.experienceId);
+  //   }
+  //   if (a4tData.experienceName) {
+  //     redirectUrl.searchParams.set('at_experienceName', a4tData.experienceName);
+  //   }
+  //   if (a4tData.offerId) {
+  //     redirectUrl.searchParams.set('at_offerId', a4tData.offerId);
+  //   }
+  //   if (a4tData.analyticsPayload?.tnta) {
+  //     redirectUrl.searchParams.set('at_tnta', a4tData.analyticsPayload.tnta);
+  //   }
 
-    return res.redirect(302, redirectUrl.toString());
-  }
+  //   return res.redirect(302, redirectUrl.toString());
+  // }
 
   // Default content (fallback if no Target offer)
   const heroContent = offers['homepage-hero']?.content ||
@@ -234,16 +260,9 @@ app.get('/', async (req, res) => {
     backgroundColor: 'green'
   };
 
-  const ctaContent = offers['homepage-cta']?.content || {
-    title: 'Special Offer',
-    description: 'Sign up today and get 20% off your first order!',
-    buttonText: 'Sign Up Now'
-  };
-
   res.render('index', {
     title: 'Home',
     hero: heroContent,
-    cta: ctaContent,
     isDemo,
     targetAnalytics: analytics
   });

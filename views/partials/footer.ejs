@@ -19,89 +19,89 @@
         <% } %>
       </div>
 
-      <!-- A4T Analytics Data -->
+      <!-- Web SDK Propositions -->
       <div style="border-top: 1px solid #444; padding-top: 12px;">
-        <div style="color: #569cd6; font-weight: bold; margin-bottom: 8px;">A4T Analytics Data</div>
+        <div style="color: #569cd6; font-weight: bold; margin-bottom: 8px;">Web SDK Propositions</div>
 
         <% if (typeof targetAnalytics !== 'undefined' && targetAnalytics.length > 0) { %>
           <% targetAnalytics.forEach((item, index) => { %>
             <div style="background: #2d2d2d; padding: 10px; border-radius: 4px; margin-bottom: 8px;">
-              <div style="color: #dcdcaa; font-weight: bold; margin-bottom: 6px;"><%= item.mboxName %></div>
+              <div style="color: #dcdcaa; font-weight: bold; margin-bottom: 6px;">scope: "<%= item.mboxName %>"</div>
 
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 6px;">
-                <div><span style="color: #9cdcfe;">Activity ID:</span> <span style="color: #ce9178;"><%= item.activityId || 'N/A' %></span></div>
-                <div><span style="color: #9cdcfe;">Experience ID:</span> <span style="color: #ce9178;"><%= item.experienceId || 'N/A' %></span></div>
-              </div>
-
-              <% if (item.activityName) { %>
-                <div style="margin-bottom: 4px;"><span style="color: #9cdcfe;">Activity:</span> <span style="color: #6a9955;"><%= item.activityName %></span></div>
-              <% } %>
-              <% if (item.experienceName) { %>
-                <div style="margin-bottom: 4px;"><span style="color: #9cdcfe;">Experience:</span> <span style="color: #6a9955;"><%= item.experienceName %></span></div>
-              <% } %>
-              <% if (item.offerName) { %>
-                <div style="margin-bottom: 4px;"><span style="color: #9cdcfe;">Offer:</span> <span style="color: #6a9955;"><%= item.offerName %> (ID: <%= item.offerId %>)</span></div>
-              <% } %>
-
-              <% if (item.analyticsPayload) { %>
-                <div style="margin-top: 6px;">
-                  <div style="color: #9cdcfe; margin-bottom: 2px;">Analytics Payload (tnta):</div>
-                  <div style="background: #1e1e1e; padding: 6px; border-radius: 3px; word-break: break-all; color: #b5cea8;"><%= JSON.stringify(item.analyticsPayload) %></div>
+              <% if (item.propositionId) { %>
+                <div style="margin-bottom: 6px;">
+                  <div style="color: #9cdcfe; margin-bottom: 2px;">id:</div>
+                  <div style="background: #1e1e1e; padding: 4px 6px; border-radius: 3px; word-break: break-all; color: #ce9178; font-size: 10px;"><%= item.propositionId %></div>
                 </div>
               <% } %>
+
+              <div style="margin-bottom: 6px;">
+                <div style="color: #9cdcfe; margin-bottom: 2px;">scopeDetails:</div>
+                <div style="background: #1e1e1e; padding: 6px; border-radius: 3px; margin-left: 8px;">
+                  <% if (item.scopeDetailsId) { %>
+                    <div style="margin-bottom: 4px; word-break: break-all;"><span style="color: #9cdcfe;">id:</span> <span style="color: #ce9178; font-size: 10px;"><%= item.scopeDetailsId %></span></div>
+                  <% } %>
+                  <div style="margin-bottom: 4px;"><span style="color: #9cdcfe;">activity.id:</span> <span style="color: #b5cea8;">"<%= item.activityId %>"</span></div>
+                  <div style="margin-bottom: 4px;"><span style="color: #9cdcfe;">activity.name:</span> <span style="color: #6a9955;">"<%= item.activityName %>"</span></div>
+                  <div style="margin-bottom: 4px;"><span style="color: #9cdcfe;">experience.id:</span> <span style="color: #b5cea8;">"<%= item.experienceId %>"</span></div>
+                  <div style="margin-bottom: 4px;"><span style="color: #9cdcfe;">experience.name:</span> <span style="color: #6a9955;">"<%= item.experienceName %>"</span></div>
+                  <% if (item.eventToken) { %>
+                    <div style="margin-bottom: 4px; word-break: break-all;"><span style="color: #9cdcfe;">eventToken:</span> <span style="color: #ce9178; font-size: 10px;">"<%= item.eventToken %>"</span></div>
+                  <% } %>
+                  <% if (item.analyticsPayload && item.analyticsPayload.tnta) { %>
+                    <div style="word-break: break-all;"><span style="color: #9cdcfe;">analyticsDisplayToken:</span> <span style="color: #b5cea8;">"<%= item.analyticsPayload.tnta %>"</span></div>
+                  <% } %>
+                </div>
+              </div>
             </div>
           <% }) %>
         <% } else { %>
-          <div style="color: #6a9955; font-style: italic;">No A4T data available (demo mode or no activities matched)</div>
+          <div style="color: #6a9955; font-style: italic;">No propositions (demo mode or no activities matched)</div>
         <% } %>
       </div>
-
-      <!-- Redirect A4T Data (if this is a redirect landing page) -->
-      <% if (typeof redirectA4TData !== 'undefined' && typeof isRedirectLanding !== 'undefined' && isRedirectLanding) { %>
-      <div style="border-top: 1px solid #444; padding-top: 12px; margin-top: 12px;">
-        <div style="color: #e94560; font-weight: bold; margin-bottom: 8px;">Redirect Landing A4T Data</div>
-        <div style="background: #2d2d2d; padding: 10px; border-radius: 4px;">
-          <div style="margin-bottom: 4px;"><span style="color: #9cdcfe;">Activity:</span> <span style="color: #ce9178;"><%= redirectA4TData.activityName || 'N/A' %></span> (ID: <%= redirectA4TData.activityId || 'N/A' %>)</div>
-          <div style="margin-bottom: 4px;"><span style="color: #9cdcfe;">Experience:</span> <span style="color: #6a9955;"><%= redirectA4TData.experienceName || 'N/A' %></span> (ID: <%= redirectA4TData.experienceId || 'N/A' %>)</div>
-          <% if (redirectA4TData.tnta) { %>
-            <div style="margin-bottom: 4px;"><span style="color: #9cdcfe;">tnta:</span> <span style="color: #b5cea8;"><%= redirectA4TData.tnta %></span></div>
-          <% } %>
-          <% if (redirectA4TData.sdid) { %>
-            <div style="margin-bottom: 4px;"><span style="color: #9cdcfe;">SDID param:</span> <span style="color: #b5cea8; word-break: break-all; font-size: 10px;"><%= redirectA4TData.sdid %></span></div>
-          <% } %>
-          <% if (redirectA4TData.mboxSession) { %>
-            <div><span style="color: #9cdcfe;">mboxSession:</span> <span style="color: #b5cea8;"><%= redirectA4TData.mboxSession %></span></div>
-          <% } %>
-        </div>
-      </div>
-      <% } %>
     </div>
   </div>
 
-  <!-- A4T Data for JavaScript access -->
+  <!-- A4T Data for Web SDK (Launch) -->
   <script>
+    // Raw analytics data from server-side Target
     window.adobeTargetA4T = <%- JSON.stringify(typeof targetAnalytics !== 'undefined' ? targetAnalytics : []) %>;
 
-    // Helper function to send A4T display notification to Analytics
-    window.sendA4TDisplayMetrics = function() {
-      if (!window.adobeTargetA4T || window.adobeTargetA4T.length === 0) {
-        console.log('[A4T] No analytics data to send');
-        return;
-      }
-
-      window.adobeTargetA4T.forEach(function(item) {
-        if (item.analyticsPayload) {
-          console.log('[A4T] Display metric for:', item.mboxName, item.analyticsPayload);
-          // Send to Adobe Analytics via your preferred method:
-          // Option 1: Data Insertion API
-          // Option 2: s.tnt variable with AppMeasurement
-          // Option 3: Web SDK / alloy()
-        }
+    // Pre-built Web SDK propositions array for Launch to use in sendEvent
+    window.adobeTargetPropositions = (window.adobeTargetA4T || [])
+      .filter(function(item) { return item.activityId; })
+      .map(function(item) {
+        return {
+          // AT:base64-encoded JSON with activityId + experienceId
+          id: item.propositionId,
+          scope: item.mboxName,
+          scopeDetails: {
+            // AT:base64-encoded JSON with activityId + experienceId + targetType
+            id: item.scopeDetailsId,
+            activity: {
+              id: item.activityId,
+              name: item.activityName
+            },
+            experience: {
+              id: item.experienceId,
+              name: item.experienceName
+            },
+          }
+        };
       });
-    };
 
-    // Auto-send on page load (uncomment if desired)
-    // document.addEventListener('DOMContentLoaded', window.sendA4TDisplayMetrics);
+    // Complete XDM payload ready for alloy("sendEvent", ...) in Launch
+    window.adobeTargetDisplayEventXDM = {
+      eventType: 'decisioning.propositionDisplay',
+      _experience: {
+        decisioning: {
+          propositions: window.adobeTargetPropositions,
+          propositionEventType: {
+            display: 1
+          }
+        }
+      }
+    };
   </script>
 
   <footer>
