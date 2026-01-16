@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= title %> | Adobe Target Demo</title>
-  <script src="https://assets.adobedtm.com/4faed591d364/c9130caa97c6/launch-0eca5f8ec54b-development.min.js" async></script>
+  <script src="<%= process.env.ADOBE_LAUNCH_URL %>" async></script>
   <style>
     * {
       margin: 0;
