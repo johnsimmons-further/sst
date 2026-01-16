@@ -1,0 +1,37 @@
+<%- include('partials/header') %>
+
+<div class="container">
+  <% if (isDemo) { %>
+    <div class="demo-notice">
+      Running in demo mode. The banner below can be personalized via Adobe Target (mbox: products-banner).
+    </div>
+  <% } %>
+
+  <!-- Banner - Personalized by Adobe Target (mbox: products-banner) -->
+  <section style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; padding: 2rem; border-radius: 10px; text-align: center; margin-bottom: 2rem;">
+    <span style="background: rgba(255,255,255,0.2); padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem;"><%= banner.highlight %></span>
+    <h2 style="margin-top: 1rem;"><%= banner.message %></h2>
+  </section>
+
+  <h1 style="margin-bottom: 2rem;">Our Products</h1>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+    <% products.forEach(product => { %>
+      <div style="border: 1px solid #e0e0e0; border-radius: 10px; overflow: hidden; transition: transform 0.3s, box-shadow 0.3s;">
+        <div style="background: #f8f9fa; height: 200px; display: flex; align-items: center; justify-content: center; color: #999;">
+          Product Image
+        </div>
+        <div style="padding: 1.5rem;">
+          <h3 style="margin-bottom: 0.5rem;"><%= product.name %></h3>
+          <p style="color: #666; margin-bottom: 1rem;"><%= product.description %></p>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 1.5rem; font-weight: bold; color: #667eea;">$<%= product.price.toFixed(2) %></span>
+            <button class="btn btn-primary" style="padding: 0.5rem 1rem;">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

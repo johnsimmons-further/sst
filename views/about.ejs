@@ -1,0 +1,41 @@
+<%- include('partials/header') %>
+
+<div class="container">
+  <h1 style="margin-bottom: 2rem;">About This Demo</h1>
+
+  <div style="background: #f8f9fa; padding: 2rem; border-radius: 10px; margin-bottom: 2rem;">
+    <h2 style="color: #667eea; margin-bottom: 1rem;">Adobe Target Integration</h2>
+    <p style="margin-bottom: 1rem;">
+      This demo showcases server-side personalization using the Adobe Target Node.js SDK with Express and EJS templating.
+    </p>
+    <p>
+      The integration allows you to deliver personalized experiences based on Adobe Target activities,
+      audiences, and experiences - all rendered server-side before reaching the browser.
+    </p>
+  </div>
+
+  <h2 style="margin-bottom: 1rem;">Key Features</h2>
+  <ul style="list-style: none; display: grid; gap: 1rem; margin-bottom: 2rem;">
+    <li style="background: white; border-left: 4px solid #667eea; padding: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+      <strong>Server-Side Personalization</strong> - Content is personalized before the page loads, avoiding flicker
+    </li>
+    <li style="background: white; border-left: 4px solid #11998e; padding: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+      <strong>Session Tracking</strong> - Maintains user sessions via cookies for consistent experiences
+    </li>
+    <li style="background: white; border-left: 4px solid #e74c3c; padding: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+      <strong>Graceful Fallbacks</strong> - Default content displays when Target is unavailable
+    </li>
+    <li style="background: white; border-left: 4px solid #f39c12; padding: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+      <strong>EJS Templating</strong> - Simple, familiar templating syntax with full JavaScript support
+    </li>
+  </ul>
+
+  <h2 style="margin-bottom: 1rem;">Configuration</h2>
+  <div style="background: #2c3e50; color: #ecf0f1; padding: 1.5rem; border-radius: 8px; font-family: monospace;">
+    <p style="color: #95a5a6; margin-bottom: 0.5rem;"># .env file</p>
+    <p>ADOBE_TARGET_CLIENT=your-client-id</p>
+    <p>ADOBE_TARGET_ORG_ID=your-org-id@AdobeOrg</p>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

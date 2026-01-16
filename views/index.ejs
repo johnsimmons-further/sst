@@ -1,0 +1,45 @@
+<%- include('partials/header') %>
+
+<% if (isDemo) { %>
+  <div class="container">
+    <div class="demo-notice">
+      Running in demo mode. Configure ADOBE_TARGET_CLIENT and ADOBE_TARGET_ORG_ID in .env to enable personalization.
+    </div>
+  </div>
+<% } %>
+
+<!-- Hero Section - Personalized by Adobe Target (mbox: homepage-hero) -->
+<section class="hero" style="background-color: <%= hero.backgroundColor %>;">
+  <h1><%= hero.headline %></h1>
+  <p><%= hero.subheadline %></p>
+  <a href="/products" class="btn btn-secondary"><%= hero.buttonText %></a>
+</section>
+
+<div class="container">
+  <!-- CTA Section - Personalized by Adobe Target (mbox: homepage-cta) -->
+  <section class="cta-section">
+    <h2><%= cta.title %></h2>
+    <p><%= cta.description %></p>
+    <button class="btn btn-primary"><%= cta.buttonText %></button>
+  </section>
+
+  <section style="padding: 2rem 0;">
+    <h2 style="margin-bottom: 1.5rem;">How It Works</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+      <div style="padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
+        <h3 style="color: #667eea; margin-bottom: 0.5rem;">1. Request Offers</h3>
+        <p>The server calls Adobe Target's getOffers() API with mbox names to fetch personalized content.</p>
+      </div>
+      <div style="padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
+        <h3 style="color: #667eea; margin-bottom: 0.5rem;">2. Target Decides</h3>
+        <p>Adobe Target evaluates audience rules and activities to determine which content variant to serve.</p>
+      </div>
+      <div style="padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
+        <h3 style="color: #667eea; margin-bottom: 0.5rem;">3. Render Content</h3>
+        <p>The personalized content is passed to EJS templates and rendered server-side before sending to the browser.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<%- include('partials/footer') %>

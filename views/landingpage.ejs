@@ -1,0 +1,317 @@
+<%- include('partials/header') %>
+
+<style>
+  .landing-hero {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    color: white;
+    padding: 5rem 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .landing-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+    background-size: 50px 50px;
+    opacity: 0.5;
+  }
+  .landing-hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .landing-hero h1 {
+    font-size: 3.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 800;
+    line-height: 1.1;
+  }
+  .landing-hero p {
+    font-size: 1.4rem;
+    margin-bottom: 2.5rem;
+    opacity: 0.9;
+  }
+  .btn-cta {
+    background: linear-gradient(135deg, #e94560 0%, #ff6b6b 100%);
+    color: white;
+    padding: 1rem 3rem;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+    text-decoration: none;
+    display: inline-block;
+    font-weight: bold;
+  }
+  .btn-cta:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(233, 69, 96, 0.4);
+  }
+  .trust-badges {
+    margin-top: 3rem;
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    flex-wrap: wrap;
+    opacity: 0.8;
+  }
+  .trust-badge {
+    text-align: center;
+  }
+  .trust-badge-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #e94560;
+  }
+  .trust-badge-label {
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+  .offer-section {
+    background: #f8f9fa;
+    padding: 4rem 2rem;
+  }
+  .offer-card {
+    max-width: 600px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+    overflow: hidden;
+    position: relative;
+  }
+  .offer-header {
+    background: linear-gradient(135deg, #e94560 0%, #ff6b6b 100%);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+  }
+  .offer-discount {
+    font-size: 3rem;
+    font-weight: 800;
+  }
+  .offer-title {
+    font-size: 1.2rem;
+    opacity: 0.9;
+  }
+  .offer-body {
+    padding: 2rem;
+  }
+  .offer-description {
+    text-align: center;
+    color: #666;
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+  }
+  .offer-features {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 2rem;
+  }
+  .offer-features li {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .offer-features li::before {
+    content: '✓';
+    color: #27ae60;
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
+  .offer-cta {
+    text-align: center;
+  }
+  .countdown {
+    background: #fff3cd;
+    padding: 0.75rem;
+    text-align: center;
+    font-weight: bold;
+    color: #856404;
+  }
+  .testimonial-section {
+    padding: 4rem 2rem;
+    background: white;
+  }
+  .testimonial-card {
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .testimonial-quote {
+    font-size: 1.5rem;
+    font-style: italic;
+    color: #333;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    position: relative;
+  }
+  .testimonial-quote::before {
+    content: '"';
+    font-size: 4rem;
+    color: #e94560;
+    position: absolute;
+    top: -20px;
+    left: -10px;
+    opacity: 0.3;
+  }
+  .testimonial-author {
+    font-weight: bold;
+    color: #333;
+    font-size: 1.1rem;
+  }
+  .testimonial-role {
+    color: #666;
+  }
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    padding: 4rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .feature-card {
+    text-align: center;
+    padding: 2rem;
+  }
+  .feature-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 1.5rem;
+  }
+  .feature-title {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #333;
+  }
+  .feature-desc {
+    color: #666;
+    font-size: 0.95rem;
+  }
+  .final-cta {
+    background: #1a1a2e;
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+  .final-cta h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+  .final-cta p {
+    opacity: 0.8;
+    margin-bottom: 2rem;
+  }
+</style>
+
+<!-- Hero Section -->
+<section class="landing-hero">
+  <div class="landing-hero-content">
+    <h1>Transform Your Business Today</h1>
+    <p>Join 10,000+ companies already using our platform to drive growth</p>
+    <a href="#offer" class="btn-cta">Start Free Trial</a>
+
+    <div class="trust-badges">
+      <div class="trust-badge">
+        <div class="trust-badge-number">10,000+</div>
+        <div class="trust-badge-label">Companies</div>
+      </div>
+      <div class="trust-badge">
+        <div class="trust-badge-number">99.9%</div>
+        <div class="trust-badge-label">Uptime</div>
+      </div>
+      <div class="trust-badge">
+        <div class="trust-badge-number">4.9/5</div>
+        <div class="trust-badge-label">Rating</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features Grid -->
+<div class="features-grid">
+  <div class="feature-card">
+    <div class="feature-icon">⚡</div>
+    <div class="feature-title">Lightning Fast</div>
+    <div class="feature-desc">Deploy in minutes, not months. Our platform gets you up and running instantly.</div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">🔒</div>
+    <div class="feature-title">Enterprise Security</div>
+    <div class="feature-desc">SOC 2 Type II certified with end-to-end encryption for all your data.</div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">📊</div>
+    <div class="feature-title">Real-time Analytics</div>
+    <div class="feature-desc">Track every metric that matters with our powerful dashboard.</div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">🔗</div>
+    <div class="feature-title">Easy Integrations</div>
+    <div class="feature-desc">Connect with 100+ tools you already use, from Salesforce to Slack.</div>
+  </div>
+</div>
+
+<!-- Offer Section -->
+<section class="offer-section" id="offer">
+  <div class="offer-card">
+    <div class="countdown">⏰ Offer expires in: 23:59:42</div>
+    <div class="offer-header">
+      <div class="offer-title">Limited Time Offer</div>
+      <div class="offer-discount">50% OFF</div>
+    </div>
+    <div class="offer-body">
+      <p class="offer-description">Get started with our Pro plan at half the price. No credit card required.</p>
+      <ul class="offer-features">
+        <li>Unlimited users</li>
+        <li>24/7 support</li>
+        <li>Advanced analytics</li>
+        <li>Custom integrations</li>
+      </ul>
+      <div class="offer-cta">
+        <button class="btn-cta">Claim Your Discount</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonial Section -->
+<section class="testimonial-section">
+  <div class="testimonial-card">
+    <p class="testimonial-quote">This platform completely transformed how we approach customer engagement. Our conversion rates increased by 340% in just 3 months.</p>
+    <div class="testimonial-author">Sarah Johnson</div>
+    <div class="testimonial-role">VP of Marketing, TechCorp Inc.</div>
+  </div>
+</section>
+
+<!-- Final CTA -->
+<section class="final-cta">
+  <h2>Ready to Get Started?</h2>
+  <p>Join thousands of companies already growing with our platform.</p>
+  <a href="#offer" class="btn-cta">Start Your Free Trial</a>
+</section>
+
+<% if (typeof isRedirectLanding !== 'undefined' && isRedirectLanding) { %>
+<!-- A4T Redirect Landing Page Data (for Launch to consume) -->
+<script>
+  window.adobeTargetRedirectData = <%- JSON.stringify(redirectA4TData) %>;
+</script>
+<% } %>
+
+<%- include('partials/footer') %>
