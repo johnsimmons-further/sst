@@ -54,6 +54,68 @@ function saveTargetCookie(res, cookie) {
   res.cookie(cookie.name, cookie.value, { maxAge: cookie.maxAge * 1000 });
 }
 
+// Helper: Extract ECID (Marketing Cloud ID) from AMCV cookie
+function getEcidFromCookie(req) {
+  const orgId = process.env.ADOBE_TARGET_ORG_ID?.replace('@', '%40');
+  const amcvCookieName = `AMCV_${orgId}`;
+  const amcvCookie = req.cookies[amcvCookieName];
+
+  if (!amcvCookie) return null;
+
+  // AMCV cookie format: MCMID|<ecid>|other|values
+  const mcmidMatch = amcvCookie.match(/MCMID\|([^|]+)/);
+  return mcmidMatch ? mcmidMatch[1] : null;
+}
+
+// Helper: Send A4T display hit via Data Insertion API
+async function sendA4TDisplayHit(req, analyticsData, pageName) {
+  const trackingServer = process.env.ADOBE_ANALYTICS_TRACKING_SERVER;
+  const rsid = process.env.ADOBE_ANALYTICS_RSID;
+
+  if (!trackingServer || !rsid) {
+    console.warn('[A4T] Missing tracking server or RSID configuration');
+    return;
+  }
+
+  const tnta = analyticsData?.analyticsPayload?.tnta;
+  if (!tnta) {
+    console.warn('[A4T] No TNTA token available for', analyticsData?.mboxName);
+    return;
+  }
+
+  const ecid = getEcidFromCookie(req);
+  if (!ecid) {
+    console.warn('[A4T] No ECID found in AMCV cookie - A4T hit not sent');
+    return;
+  }
+
+  // Build Data Insertion API URL
+  // Format: https://<tracking-server>/b/ss/<rsid>/0?tnta=<token>&mid=<ecid>&pageName=<page>&pe=tnt
+  const params = new URLSearchParams({
+    pe: 'tnt',
+    tnta: tnta,
+    mid: ecid,
+    pageName: pageName,
+    events: 'event8',
+    c2: `server-side-a4t|${analyticsData.mboxName}|${analyticsData.activityId || 'unknown'}`
+  });
+
+  const url = `https://${trackingServer}/b/ss/${rsid}/0?${params.toString()}`;
+
+  try {
+    console.log('[A4T] Sending display hit:', url);
+    const response = await fetch(url);
+
+    if (response.ok) {
+      console.log('[A4T] Display hit sent successfully for', analyticsData.mboxName);
+    } else {
+      console.error('[A4T] Display hit failed:', response.status, response.statusText);
+    }
+  } catch (error) {
+    console.error('[A4T] Error sending display hit:', error.message);
+  }
+}
+
 // Helper: Get offers from Adobe Target
 async function getTargetOffers(req, res, mboxNames) {
   if (!targetClient) {
@@ -252,6 +314,13 @@ app.get('/', async (req, res) => {
   //   return res.redirect(302, redirectUrl.toString());
   // }
 
+  // Send A4T display hit for each mbox with analytics data
+  for (const analyticsData of analytics) {
+    if (analyticsData.analyticsPayload?.tnta) {
+      await sendA4TDisplayHit(req, analyticsData, 'sst:home');
+    }
+  }
+
   // Default content (fallback if no Target offer)
   const heroContent = offers['homepage-hero']?.content ||
   // this is your default content -
@@ -273,6 +342,13 @@ app.get('/', async (req, res) => {
 app.get('/products', async (req, res) => {
   const targetResponse = await req.getTargetOffers(['products-banner']);
   const { offers, analytics, isDemo } = targetResponse;
+
+  // Send A4T display hit for each mbox with analytics data
+  for (const analyticsData of analytics) {
+    if (analyticsData.analyticsPayload?.tnta) {
+      await sendA4TDisplayHit(req, analyticsData, 'sst:products');
+    }
+  }
 
   const bannerContent = offers['products-banner']?.content || {
     message: 'Check out our latest products!',
