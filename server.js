@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const TargetClient = require('@adobe/target-nodejs-sdk');
+const Visitor = require('@adobe-mcid/visitor-js-server');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -54,12 +55,15 @@ function saveTargetCookie(res, cookie) {
   res.cookie(cookie.name, cookie.value, { maxAge: cookie.maxAge * 1000 });
 }
 
+// Helper: Get AMCV cookie name for this org
+function getAmcvCookieName() {
+  const orgId = process.env.ADOBE_TARGET_ORG_ID?.replace('@', '%40');
+  return `AMCV_${orgId}`;
+}
+
 // Helper: Extract ECID (Marketing Cloud ID) from AMCV cookie
 function getEcidFromCookie(req) {
-  const orgId = process.env.ADOBE_TARGET_ORG_ID?.replace('@', '%40');
-  const amcvCookieName = `AMCV_${orgId}`;
-  const amcvCookie = req.cookies[amcvCookieName];
-
+  const amcvCookie = req.cookies[getAmcvCookieName()];
   if (!amcvCookie) return null;
 
   // AMCV cookie format: MCMID|<ecid>|other|values
@@ -67,8 +71,68 @@ function getEcidFromCookie(req) {
   return mcmidMatch ? mcmidMatch[1] : null;
 }
 
+// Helper: Generate ECID via demdex if not present in cookie
+async function getOrCreateEcid(req, res) {
+  const existingEcid = getEcidFromCookie(req);
+  if (existingEcid) {
+    return existingEcid;
+  }
+
+  const orgId = process.env.ADOBE_TARGET_ORG_ID;
+  if (!orgId) return null;
+
+  try {
+    const demdexUrl = new URL('https://dpm.demdex.net/id');
+    demdexUrl.searchParams.set('d_visid_ver', '5.0.0');
+    demdexUrl.searchParams.set('d_fieldgroup', 'MC');
+    demdexUrl.searchParams.set('d_rtbd', 'json');
+    demdexUrl.searchParams.set('d_ver', '2');
+    demdexUrl.searchParams.set('d_orgid', orgId);
+    demdexUrl.searchParams.set('d_nsid', '0');
+
+    console.log('[ECID] Generating new ECID via demdex...');
+    const response = await fetch(demdexUrl.toString());
+    if (!response.ok) return null;
+
+    const data = await response.json();
+    const ecid = data.d_mid;
+    if (!ecid) return null;
+
+    console.log('[ECID] Generated:', ecid);
+
+    // Set AMCV cookie for client-side
+    res.cookie(getAmcvCookieName(), `MCMID|${ecid}`, {
+      maxAge: 2 * 365 * 24 * 60 * 60 * 1000,
+      path: '/'
+    });
+
+    return ecid;
+  } catch (error) {
+    console.error('[ECID] Error:', error.message);
+    return null;
+  }
+}
+
+// Helper: Get visitor payload with ECID and SDID
+async function getVisitorPayload(req, res, mboxName) {
+  const orgId = process.env.ADOBE_TARGET_ORG_ID;
+  if (!orgId) return null;
+
+  // Get or create ECID (via cookie or demdex)
+  const ecid = await getOrCreateEcid(req, res);
+
+  // Use Visitor SDK for SDID generation
+  const visitor = new Visitor(orgId);
+  const sdid = visitor.getSupplementalDataID(mboxName || 'target-global-mbox');
+  const serverState = visitor.getState();
+
+  console.log('[Visitor] Payload:', { ecid, sdid, mbox: mboxName });
+
+  return { ecid, sdid, serverState };
+}
+
 // Helper: Send A4T display hit via Data Insertion API
-async function sendA4TDisplayHit(req, analyticsData, pageName) {
+async function sendA4TDisplayHit(req, res, analyticsData, pageName, visitorPayload) {
   const trackingServer = process.env.ADOBE_ANALYTICS_TRACKING_SERVER;
   const rsid = process.env.ADOBE_ANALYTICS_RSID;
 
@@ -83,9 +147,8 @@ async function sendA4TDisplayHit(req, analyticsData, pageName) {
     return;
   }
 
-  const ecid = getEcidFromCookie(req);
-  if (!ecid) {
-    console.warn('[A4T] No ECID found in AMCV cookie - A4T hit not sent');
+  if (!visitorPayload?.ecid) {
+    console.warn('[A4T] No ECID available - A4T hit not sent');
     return;
   }
 
@@ -94,11 +157,16 @@ async function sendA4TDisplayHit(req, analyticsData, pageName) {
   const params = new URLSearchParams({
     pe: 'tnt',
     tnta: tnta,
-    mid: ecid,
+    mid: visitorPayload.ecid,
     pageName: pageName,
     events: 'event8',
     c2: `server-side-a4t|${analyticsData.mboxName}|${analyticsData.activityId || 'unknown'}`
   });
+
+  // Include SDID for Target-Analytics stitching
+  if (visitorPayload.sdid) {
+    params.set('sdid', visitorPayload.sdid);
+  }
 
   const url = `https://${trackingServer}/b/ss/${rsid}/0?${params.toString()}`;
 
@@ -314,10 +382,13 @@ app.get('/', async (req, res) => {
   //   return res.redirect(302, redirectUrl.toString());
   // }
 
+  // Generate visitor payload (creates ECID for new visitors via demdex)
+  const visitorPayload = await getVisitorPayload(req, res, 'homepage-hero');
+
   // Send A4T display hit for each mbox with analytics data
   for (const analyticsData of analytics) {
     if (analyticsData.analyticsPayload?.tnta) {
-      await sendA4TDisplayHit(req, analyticsData, 'sst:home');
+      await sendA4TDisplayHit(req, res, analyticsData, 'sst:home', visitorPayload);
     }
   }
 
@@ -335,7 +406,8 @@ app.get('/', async (req, res) => {
     title: 'Home',
     hero: heroContent,
     isDemo,
-    targetAnalytics: analytics
+    targetAnalytics: analytics,
+    visitorState: visitorPayload?.serverState
   });
 });
 
@@ -343,10 +415,13 @@ app.get('/products', async (req, res) => {
   const targetResponse = await req.getTargetOffers(['products-banner']);
   const { offers, analytics, isDemo } = targetResponse;
 
+  // Generate visitor payload (creates ECID for new visitors via demdex)
+  const visitorPayload = await getVisitorPayload(req, res, 'products-banner');
+
   // Send A4T display hit for each mbox with analytics data
   for (const analyticsData of analytics) {
     if (analyticsData.analyticsPayload?.tnta) {
-      await sendA4TDisplayHit(req, analyticsData, 'sst:products');
+      await sendA4TDisplayHit(req, res, analyticsData, 'sst:products', visitorPayload);
     }
   }
 
@@ -367,7 +442,8 @@ app.get('/products', async (req, res) => {
     banner: bannerContent,
     products,
     isDemo,
-    targetAnalytics: analytics
+    targetAnalytics: analytics,
+    visitorState: visitorPayload?.serverState
   });
 });
 
