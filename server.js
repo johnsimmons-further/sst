@@ -137,7 +137,7 @@ const targetConfig = {
   decisioningMethod: 'server-side',
   timeout: 5000,
   logger: {
-    debug: (...args) => console.log('[Target Debug]', ...args),
+    debug: () => {}, // Disabled - was outputting EJS compiled templates
     error: (...args) => console.error('[Target Error]', ...args)
   }
 };
@@ -450,8 +450,9 @@ async function getTargetOffers(req, res, mboxNames) {
 app.use((req, res, next) => {
   req.getTargetOffers = (mboxNames) => getTargetOffers(req, res, mboxNames);
   // Pass mbox cookie to all templates for debug display
+  // Note: Can't use "debug" as the key - EJS interprets it as enabling debug mode
   const mboxCookieName = TargetClient.TargetCookieName || 'mbox';
-  res.locals.debug = {
+  res.locals.targetDebug = {
     mboxCookie: req.cookies[mboxCookieName] || null,
     mboxCookieName
   };
