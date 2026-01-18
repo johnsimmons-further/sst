@@ -14,10 +14,10 @@
     <!-- Product Info -->
     <div>
       <span style="background: #667eea; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem;"><%= product.category %></span>
-      <h1 style="margin: 1rem 0 0.5rem;"><%= product.name %></h1>
+      <h1 style="margin: 1rem 0 0.5rem;" id="product-name" data-name="<%= product.name %>"><%= product.name %></h1>
       <p style="color: #666; font-size: 1.1rem; margin-bottom: 1.5rem;"><%= product.description %></p>
 
-      <div style="font-size: 2.5rem; font-weight: bold; color: #667eea; margin-bottom: 1.5rem;">
+      <div id="product-price" data-price="<%= product.price %>" style="font-size: 2.5rem; font-weight: bold; color: #667eea; margin-bottom: 1.5rem;">
         $<%= product.price.toFixed(2) %>
       </div>
 
