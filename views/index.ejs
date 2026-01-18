@@ -16,23 +16,54 @@
 </section>
 
 <div class="container">
-  <!-- CTA Section - Personalized by Adobe Target (mbox: homepage-cta) -->
-
   <section style="padding: 2rem 0;">
-    <h2 style="margin-bottom: 1.5rem;">How It Works</h2>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+    <h2 style="margin-bottom: 1.5rem;">Server-Side Target + A4T Implementation</h2>
+    <p style="margin-bottom: 1.5rem; color: #666;">
+      The hero section above is powered by the <code>homepage-hero</code> mbox. When you loaded this page, the server made a request to Adobe Target before rendering any HTML.
+    </p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
       <div style="padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
-        <h3 style="color: #667eea; margin-bottom: 0.5rem;">1. Request Offers</h3>
-        <p>The server calls Adobe Target's getOffers() API with mbox names to fetch personalized content.</p>
+        <h3 style="color: #667eea; margin-bottom: 0.5rem;">1. Target SDK Request</h3>
+        <p>On the <code>/ index</code> route, the server (<code>server.js</code>) calls the homepage-hero mbox with <code>getTargetOffers(['homepage-hero'])</code> using the <code>@adobe/target-nodejs-sdk</code>. Target returns the an experience along with a <code>tnta</code> analytics token for counting the display event in A4T.</p>
       </div>
       <div style="padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
-        <h3 style="color: #667eea; margin-bottom: 0.5rem;">2. Target Decides</h3>
-        <p>Adobe Target evaluates audience rules and activities to determine which content variant to serve.</p>
+        <h3 style="color: #667eea; margin-bottom: 0.5rem;">2. ECID + SDID Generation</h3>
+        <p>If you are a new visitor, the server calls <code>dpm.demdex.net/id</code> to generate an ECID, then sets the <code>AMCV_</code> cookie so browser and server share the same visitor identity.</p>
+        <p style="margin-top: 0.5rem;">The server also uses <code>@adobe-mcid/visitor-js-server</code> to generate an SDID (Supplemental Data ID) via <code>visitor.getSupplementalDataID('homepage-hero')</code>. The SDID is included in the A4T hit to stitch Target and Analytics data together.</p>
       </div>
       <div style="padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
-        <h3 style="color: #667eea; margin-bottom: 0.5rem;">3. Render Content</h3>
-        <p>The personalized content is passed to EJS templates and rendered server-side before sending to the browser.</p>
+        <h3 style="color: #667eea; margin-bottom: 0.5rem;">3. Server-Side A4T Hit</h3>
+        <p>Once a target response is received, the ECID exists, and before the HTML is rendered, the server fires a GET request to the Data Insertion API:<br>
+        <code style="font-size: 0.8rem;">https://&lt;tracking-server&gt;/b/ss/&lt;rsid&gt;/0?pe=tnt&tnta=...&mid=...&pageName=sst:home</code>. This counts the display metrics and dimensions in Adobe Analytics A4T. There is no client side tracking of Target data that occurs for this mbox.</p>
       </div>
+      <div style="padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
+        <h3 style="color: #667eea; margin-bottom: 0.5rem;">4. HTML Rendered</h3>
+        <p>The <code>homepage-hero</code> content (headline, subheadline, backgroundColor, buttonText) is injected into this EJS template. The browser receives fully personalized HTML with no flicker.</p>
+      </div>
+    </div>
+
+    <div style="padding: 1.5rem; background: #e8f4f8; border-radius: 8px; border-left: 4px solid #667eea;">
+      <h3 style="margin-bottom: 1rem;">Current Activity Data</h3>
+      <% if (targetAnalytics && targetAnalytics.length > 0 && targetAnalytics[0].activityId) { %>
+        <ul style="margin: 0; padding-left: 1.5rem;">
+          <li><strong>Mbox:</strong> <code><%= targetAnalytics[0].mboxName %></code></li>
+          <li><strong>Activity ID:</strong> <%= targetAnalytics[0].activityId %></li>
+          <li><strong>Experience ID:</strong> <%= targetAnalytics[0].experienceId %></li>
+          <li><strong>TNTA Token:</strong> <code style="font-size: 0.85rem;"><%= targetAnalytics[0].analyticsPayload?.tnta || 'N/A' %></code></li>
+        </ul>
+      <% } else { %>
+        <p style="margin: 0; color: #666;">No active Target activity for this mbox, or running in demo mode.</p>
+      <% } %>
+    </div>
+
+    <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+      <a href="https://experience.adobe.com/#/@searchdiscovery/target/activities" target="_blank" class="btn" style="background: #667eea; color: white; text-decoration: none;">
+        View Target Activity
+      </a>
+      <a href="https://experience.adobe.com/#/@searchdiscovery/analytics/workspace" target="_blank" class="btn" style="background: #f5a623; color: white; text-decoration: none;">
+        View A4T Dashboard
+      </a>
     </div>
   </section>
 </div>

@@ -1,0 +1,68 @@
+<%- include('partials/header') %>
+
+<div class="container">
+  <a href="/products" style="display: inline-flex; align-items: center; gap: 0.5rem; color: #667eea; text-decoration: none; margin-bottom: 2rem;">
+    &larr; Back to Products
+  </a>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start;">
+    <!-- Product Image -->
+    <div style="background: <%= product.color || '#f8f9fa' %>; border-radius: 15px; height: 400px; display: flex; align-items: center; justify-content: center; font-size: 8rem;">
+      <%= product.emoji || '📦' %>
+    </div>
+
+    <!-- Product Info -->
+    <div>
+      <span style="background: #667eea; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem;"><%= product.category %></span>
+      <h1 style="margin: 1rem 0 0.5rem;"><%= product.name %></h1>
+      <p style="color: #666; font-size: 1.1rem; margin-bottom: 1.5rem;"><%= product.description %></p>
+
+      <div style="font-size: 2.5rem; font-weight: bold; color: #667eea; margin-bottom: 1.5rem;">
+        $<%= product.price.toFixed(2) %>
+      </div>
+
+      <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem;">
+        <h3 style="margin-bottom: 1rem;">Product Details</h3>
+        <ul style="margin: 0; padding-left: 1.5rem; color: #666;">
+          <% product.features.forEach(feature => { %>
+            <li style="margin-bottom: 0.5rem;"><%= feature %></li>
+          <% }) %>
+        </ul>
+      </div>
+
+      <div style="display: flex; gap: 1rem;">
+        <button class="btn btn-primary" style="flex: 1; padding: 1rem;">Add to Cart</button>
+        <button class="btn" style="padding: 1rem; border: 2px solid #667eea; background: white; color: #667eea;">Save for Later</button>
+      </div>
+
+      <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e0e0e0;">
+        <p style="color: #666; font-size: 0.9rem;">
+          <strong>SKU:</strong> <%= product.sku %><br>
+          <strong>In Stock:</strong> <%= product.stock %> units
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Related Products -->
+  <section style="margin-top: 4rem;">
+    <h2 style="margin-bottom: 1.5rem;">You Might Also Like</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+      <% relatedProducts.forEach(related => { %>
+        <a href="/products/<%= related.id %>" style="text-decoration: none; color: inherit;">
+          <div style="border: 1px solid #e0e0e0; border-radius: 10px; overflow: hidden; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-3px)';" onmouseout="this.style.transform='translateY(0)';">
+            <div style="background: <%= related.color %>; height: 120px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem;">
+              <%= related.emoji %>
+            </div>
+            <div style="padding: 1rem;">
+              <h4 style="margin-bottom: 0.25rem; font-size: 1rem;"><%= related.name %></h4>
+              <span style="color: #667eea; font-weight: bold;">$<%= related.price.toFixed(2) %></span>
+            </div>
+          </div>
+        </a>
+      <% }) %>
+    </div>
+  </section>
+</div>
+
+<%- include('partials/footer') %>
