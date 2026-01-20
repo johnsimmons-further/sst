@@ -4,20 +4,20 @@ const PRODUCTS = require('../data/products');
 const { getVisitorPayload, sendA4TDisplayHit } = require('../services/target');
 
 router.get('/', async (req, res) => {
-  const targetResponse = await req.getTargetOffers(['products-banner']);
-  const { offers, analytics, isDemo } = targetResponse;
+  // const targetResponse = await req.getTargetOffers(['products-banner']);
+  // const { offers, analytics, isDemo } = targetResponse;
 
   // Generate visitor payload (creates ECID for new visitors via demdex)
-  const visitorPayload = await getVisitorPayload(req, res, 'products-banner');
+  // const visitorPayload = await getVisitorPayload(req, res, 'products-banner');
 
   // Send A4T display hit for each mbox with analytics data
-  for (const analyticsData of analytics) {
-    if (analyticsData.analyticsPayload?.tnta) {
-      await sendA4TDisplayHit(req, res, analyticsData, 'sst:products', visitorPayload);
-    }
-  }
+  // for (const analyticsData of analytics) {
+  //   if (analyticsData.analyticsPayload?.tnta) {
+  //     await sendA4TDisplayHit(req, res, analyticsData, 'sst:products', visitorPayload);
+  //   }
+  // }
 
-  const bannerContent = offers['products-banner']?.content || {
+  const bannerContent =  {
     message: 'Check out our latest products!',
     highlight: 'New Arrivals'
   };
@@ -26,9 +26,9 @@ router.get('/', async (req, res) => {
     title: 'Products',
     banner: bannerContent,
     products: PRODUCTS,
-    isDemo,
-    targetAnalytics: analytics,
-    visitorState: visitorPayload?.serverState
+    // isDemo,
+    // targetAnalytics: analytics,
+    // visitorState: visitorPayload?.serverState
   });
 });
 

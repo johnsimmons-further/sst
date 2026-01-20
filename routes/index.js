@@ -4,7 +4,7 @@ const { getVisitorPayload, sendA4TDisplayHit } = require('../services/target');
 
 router.get('/', async (req, res) => {
   const targetResponse = await req.getTargetOffers(['homepage-hero']);
-  const { offers, analytics, isDemo } = targetResponse;
+  const { offers, analytics } = targetResponse;
 
   // Generate visitor payload (creates ECID for new visitors via demdex)
   const visitorPayload = await getVisitorPayload(req, res, 'homepage-hero');
@@ -27,7 +27,6 @@ router.get('/', async (req, res) => {
   res.render('index', {
     title: 'Home',
     hero: heroContent,
-    isDemo,
     targetAnalytics: analytics,
     visitorState: visitorPayload?.serverState
   });

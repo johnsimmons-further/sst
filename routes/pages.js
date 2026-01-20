@@ -1,31 +1,40 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
+const { getVisitorPayload, sendA4TDisplayHit } = require('../services/target');
 
-router.get('/about', (req, res) => {
-  res.render('about', { title: 'About Us', targetAnalytics: [] });
+router.get("/about", async (req, res) => {
+  const targetResponse = await req.getTargetOffers(["redirect"]);
+  const { offers, analytics } = targetResponse;
+  const visitorPayload = await getVisitorPayload(req, res, "redirect");
+
+  if (
+    offers["redirect"] &&
+    offers["redirect"].type === 'redirect' &&
+    offers["redirect"].redirectUrl
+  ) {
+    // Send A4T display hit for each mbox with analytics data
+    for (const analyticsData of analytics) {
+      if (analyticsData.analyticsPayload?.tnta) {
+        await sendA4TDisplayHit(
+          req,
+          res,
+          analyticsData,
+          "sst:about",
+          visitorPayload,
+        );
+      }
+    }
+    return res.redirect(offers["redirect"].redirectUrl);
+  } else {
+    res.render("about", {
+      title: "About Us",
+    });
+  }
 });
 
-router.get('/landingpage', (req, res) => {
-  // Parse A4T redirect data from URL params (from server-side redirect)
-  const redirectA4TData = {
-    activityId: req.query.at_activityId || null,
-    activityName: req.query.at_activityName || null,
-    experienceId: req.query.at_experienceId || null,
-    experienceName: req.query.at_experienceName || null,
-    offerId: req.query.at_offerId || null,
-    tnta: req.query.at_tnta || null,
-    sdid: req.query.adobe_mc_sdid || null,
-    mboxSession: req.query.mboxSession || null
-  };
-
-  // Check if this is a redirect landing (has A4T data)
-  const isRedirectLanding = !!(redirectA4TData.activityId || redirectA4TData.sdid);
-
-  res.render('landingpage', {
-    title: 'Special Offer',
-    targetAnalytics: [],
-    redirectA4TData,
-    isRedirectLanding
+router.get("/landingpage", (req, res) => {
+  res.render("landingpage", {
+    title: "Special Offer",
   });
 });
 

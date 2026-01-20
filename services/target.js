@@ -173,12 +173,11 @@ async function getTargetOffers(req, res, mboxNames) {
     // Return demo content when Target is not configured
     return {
       offers: mboxNames.reduce((acc, name) => {
-        acc[name] = { content: null, isDemo: true };
+        acc[name] = { content: null };
         return acc;
       }, {}),
       analytics: [],
-      isDemo: true
-    };
+          };
   }
 
   const targetCookie = req.cookies[TargetClient.TargetCookieName];
@@ -276,11 +275,10 @@ async function getTargetOffers(req, res, mboxNames) {
           offers[mbox.name] = {
             type: 'redirect',
             redirectUrl: option.content,
-            isDemo: false,
-            analytics: mboxAnalytics
+                        analytics: mboxAnalytics
           };
         } else {
-          offers[mbox.name] = { content, isDemo: false, analytics: mboxAnalytics };
+          offers[mbox.name] = { content, analytics: mboxAnalytics };
         }
         analytics.push(mboxAnalytics);
       });
@@ -289,8 +287,7 @@ async function getTargetOffers(req, res, mboxNames) {
     return {
       offers,
       analytics,
-      isDemo: false,
-      rawAnalyticsDetails: response.analyticsDetails
+            rawAnalyticsDetails: response.analyticsDetails
     };
   } catch (error) {
     console.error('Error fetching Target offers:', error);

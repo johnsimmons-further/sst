@@ -1,13 +1,5 @@
 <%- include('partials/header') %>
 
-<% if (isDemo) { %>
-  <div class="container">
-    <div class="demo-notice">
-      Running in demo mode. Configure ADOBE_TARGET_CLIENT and ADOBE_TARGET_ORG_ID in .env to enable personalization.
-    </div>
-  </div>
-<% } %>
-
 <!-- Hero Section - Personalized by Adobe Target (mbox: homepage-hero) -->
 <section class="hero" style="background-color: <%= hero.backgroundColor %>;">
   <h1><%= hero.headline %></h1>
@@ -19,27 +11,31 @@
   <section style="padding: 2rem 0;">
     <h2 style="margin-bottom: 1.5rem;">Server-Side Target + A4T Implementation</h2>
     <p style="margin-bottom: 1.5rem; color: #666;">
-      The hero section above is powered by the <code>homepage-hero</code> mbox. When you loaded this page, the server made a request to Adobe Target before rendering any HTML.
+      The hero section above is powered by the <code>homepage-hero</code> mbox which is called by the server, not the browser. The server will change the color of the hero section based on the Target experience returned. Because this decision is made by the server, the page content will be returned with Target personalization already applied, eliminating any flicker or delay in rendering personalized content.
     </p>
 
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
       <div style="padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
         <h3 style="color: #667eea; margin-bottom: 0.5rem;">1. Target SDK Request</h3>
-        <p>On the <code>/ index</code> route, the server (<code>server.js</code>) calls the homepage-hero mbox with <code>getTargetOffers(['homepage-hero'])</code> using the <code>@adobe/target-nodejs-sdk</code>. Target returns the an experience along with a <code>tnta</code> analytics token for counting the display event in A4T.</p>
+        <p>On the <code>/ index</code> route, the server (<code>server.js</code>) calls the homepage-hero mbox with <code>getTargetOffers(['homepage-hero'])</code> using the <code>@adobe/target-nodejs-sdk</code>. Target returns the an experience along with a <code>tnta</code> analytics token for counting the display event in Adobe Analytics A4T.</p>
       </div>
       <div style="padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
         <h3 style="color: #667eea; margin-bottom: 0.5rem;">2. ECID + SDID Generation</h3>
-        <p>If you are a new visitor, the server calls <code>dpm.demdex.net/id</code> to generate an ECID, then sets the <code>AMCV_</code> cookie so browser and server share the same visitor identity.</p>
+        <p>For new visitors, the server calls <code>dpm.demdex.net/id</code> to generate an ECID, then sets the <code>AMCV_</code> cookie so browser and server share the same visitor identity.</p>
         <p style="margin-top: 0.5rem;">The server also uses <code>@adobe-mcid/visitor-js-server</code> to generate an SDID (Supplemental Data ID) via <code>visitor.getSupplementalDataID('homepage-hero')</code>. The SDID is included in the A4T hit to stitch Target and Analytics data together.</p>
       </div>
       <div style="padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
         <h3 style="color: #667eea; margin-bottom: 0.5rem;">3. Server-Side A4T Hit</h3>
-        <p>Once a target response is received, the ECID exists, and before the HTML is rendered, the server fires a GET request to the Data Insertion API:<br>
-        <code style="font-size: 0.8rem;">https://&lt;tracking-server&gt;/b/ss/&lt;rsid&gt;/0?pe=tnt&tnta=...&mid=...&pageName=sst:home</code>. This counts the display metrics and dimensions in Adobe Analytics A4T. There is no client side tracking of Target data that occurs for this mbox.</p>
+        <p>Once a target response is received, the ECID exists, and before the HTML is rendered, the server fires a GET request to the Adobe Analytics Data Insertion API:<br>
+        <code style="font-size: 0.8rem;">https://&lt;tracking-server&gt;/b/ss/&lt;rsid&gt;/0?pe=tnt&tnta=...&mid=...&pageName=sst:home</code>. This counts the display metrics and dimensions in Adobe Analytics A4T. This is a server side Adobe Analytics hit. There is no client side tracking of Target data that occurs for this mbox.</p>
       </div>
       <div style="padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
         <h3 style="color: #667eea; margin-bottom: 0.5rem;">4. HTML Rendered</h3>
         <p>The <code>homepage-hero</code> content (headline, subheadline, backgroundColor, buttonText) is injected into this EJS template. The browser receives fully personalized HTML with no flicker.</p>
+      </div>
+      <div style="padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
+        <h3 style="color: #667eea; margin-bottom: 0.5rem;">5. Client Side</h3>
+        <p>As the Launch library and Web SDK load and record events, those events will be sent to Adobe Analytics. Because the ECID is already established, the client-side events can be correctly attributed to the same visitor as the server-side A4T hit.</p>
       </div>
     </div>
 
@@ -58,11 +54,11 @@
     </div>
 
     <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
-      <a href="https://experience.adobe.com/#/@searchdiscovery/target/activities" target="_blank" class="btn" style="background: #667eea; color: white; text-decoration: none;">
+      <a href="https://experience.adobe.com/#/@searchdiscovery/target/activities/activity-details/ab_manual/647114/overview" target="_blank" class="btn" style="background: #667eea; color: white; text-decoration: none;">
         View Target Activity
       </a>
-      <a href="https://experience.adobe.com/#/@searchdiscovery/analytics/workspace" target="_blank" class="btn" style="background: #f5a623; color: white; text-decoration: none;">
-        View A4T Dashboard
+      <a href="https://www5.an.adobe.com/spa/?linkId=85477733-35b5-4b93-af18-21938c3bc252&dpc=pnw" target="_blank" class="btn" style="background: #f5a623; color: white; text-decoration: none;">
+        View Adobe Analytics A4T Dashboard
       </a>
     </div>
   </section>

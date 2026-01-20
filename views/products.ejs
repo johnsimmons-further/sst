@@ -1,12 +1,6 @@
 <%- include('partials/header') %>
 
 <div class="container">
-  <% if (isDemo) { %>
-    <div class="demo-notice">
-      Running in demo mode. The banner below can be personalized via Adobe Target (mbox: products-banner).
-    </div>
-  <% } %>
-
   <!-- Banner - Personalized by Adobe Target (mbox: products-banner) -->
   <section style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; padding: 2rem; border-radius: 10px; text-align: center; margin-bottom: 2rem;">
     <span style="background: rgba(255,255,255,0.2); padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem;"><%= banner.highlight %></span>
