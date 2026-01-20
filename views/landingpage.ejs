@@ -1,311 +1,66 @@
 <%- include('partials/header') %>
 
-<style>
-  .landing-hero {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-    color: white;
-    padding: 5rem 2rem;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .landing-hero::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
-    background-size: 50px 50px;
-    opacity: 0.5;
-  }
-  .landing-hero-content {
-    position: relative;
-    z-index: 1;
-    max-width: 800px;
-    margin: 0 auto;
-  }
-  .landing-hero h1 {
-    font-size: 3.5rem;
-    margin-bottom: 1.5rem;
-    font-weight: 800;
-    line-height: 1.1;
-  }
-  .landing-hero p {
-    font-size: 1.4rem;
-    margin-bottom: 2.5rem;
-    opacity: 0.9;
-  }
-  .btn-cta {
-    background: linear-gradient(135deg, #e94560 0%, #ff6b6b 100%);
-    color: white;
-    padding: 1rem 3rem;
-    font-size: 1.2rem;
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: transform 0.3s, box-shadow 0.3s;
-    text-decoration: none;
-    display: inline-block;
-    font-weight: bold;
-  }
-  .btn-cta:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(233, 69, 96, 0.4);
-  }
-  .trust-badges {
-    margin-top: 3rem;
-    display: flex;
-    justify-content: center;
-    gap: 3rem;
-    flex-wrap: wrap;
-    opacity: 0.8;
-  }
-  .trust-badge {
-    text-align: center;
-  }
-  .trust-badge-number {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #e94560;
-  }
-  .trust-badge-label {
-    font-size: 0.9rem;
-    opacity: 0.8;
-  }
-  .offer-section {
-    background: #f8f9fa;
-    padding: 4rem 2rem;
-  }
-  .offer-card {
-    max-width: 600px;
-    margin: 0 auto;
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-    overflow: hidden;
-    position: relative;
-  }
-  .offer-header {
-    background: linear-gradient(135deg, #e94560 0%, #ff6b6b 100%);
-    color: white;
-    padding: 2rem;
-    text-align: center;
-  }
-  .offer-discount {
-    font-size: 3rem;
-    font-weight: 800;
-  }
-  .offer-title {
-    font-size: 1.2rem;
-    opacity: 0.9;
-  }
-  .offer-body {
-    padding: 2rem;
-  }
-  .offer-description {
-    text-align: center;
-    color: #666;
-    margin-bottom: 2rem;
-    font-size: 1.1rem;
-  }
-  .offer-features {
-    list-style: none;
-    padding: 0;
-    margin-bottom: 2rem;
-  }
-  .offer-features li {
-    padding: 0.75rem 0;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-  .offer-features li::before {
-    content: '✓';
-    color: #27ae60;
-    font-weight: bold;
-    font-size: 1.2rem;
-  }
-  .offer-cta {
-    text-align: center;
-  }
-  .countdown {
-    background: #fff3cd;
-    padding: 0.75rem;
-    text-align: center;
-    font-weight: bold;
-    color: #856404;
-  }
-  .testimonial-section {
-    padding: 4rem 2rem;
-    background: white;
-  }
-  .testimonial-card {
-    max-width: 700px;
-    margin: 0 auto;
-    text-align: center;
-  }
-  .testimonial-quote {
-    font-size: 1.5rem;
-    font-style: italic;
-    color: #333;
-    line-height: 1.6;
-    margin-bottom: 2rem;
-    position: relative;
-  }
-  .testimonial-quote::before {
-    content: '"';
-    font-size: 4rem;
-    color: #e94560;
-    position: absolute;
-    top: -20px;
-    left: -10px;
-    opacity: 0.3;
-  }
-  .testimonial-author {
-    font-weight: bold;
-    color: #333;
-    font-size: 1.1rem;
-  }
-  .testimonial-role {
-    color: #666;
-  }
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
-    padding: 4rem 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  .feature-card {
-    text-align: center;
-    padding: 2rem;
-  }
-  .feature-icon {
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1rem;
-    font-size: 1.5rem;
-  }
-  .feature-title {
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-    color: #333;
-  }
-  .feature-desc {
-    color: #666;
-    font-size: 0.95rem;
-  }
-  .final-cta {
-    background: #1a1a2e;
-    color: white;
-    padding: 4rem 2rem;
-    text-align: center;
-  }
-  .final-cta h2 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-  }
-  .final-cta p {
-    opacity: 0.8;
-    margin-bottom: 2rem;
-  }
-</style>
+<div class="container">
+  <section style="padding: 2rem 0;">
+    <h2 style="margin-bottom: 1.5rem;">Server-Side Redirect Activity + A4T Implementation</h2>
+    <p style="margin-bottom: 1.5rem; color: #666;">
+      You arrived at this page via a server-side redirect activity. When you visited <code>/about</code>, the server called Adobe Target's <code>redirect</code> mbox, which returned instructions to redirect you here. The redirect decision and A4T tracking all happened on the server before your browser was redirected—no client-side flicker or delay.
+    </p>
 
-<!-- Hero Section -->
-<section class="landing-hero">
-  <div class="landing-hero-content">
-    <h1>Transform Your Business Today</h1>
-    <p>Join 10,000+ companies already using our platform to drive growth</p>
-    <a href="#offer" class="btn-cta">Start Free Trial</a>
-
-    <div class="trust-badges">
-      <div class="trust-badge">
-        <div class="trust-badge-number">10,000+</div>
-        <div class="trust-badge-label">Companies</div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+      <div style="padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
+        <h3 style="color: #667eea; margin-bottom: 0.5rem;">1. Target Redirect Mbox</h3>
+        <p>On the <code>/about</code> route, the server calls <a href="https://github.com/johnsimmons-further/sst/blob/main/routes/pages.js#L6">getTargetOffers(['redirect'])</a> using the <code>@adobe/target-nodejs-sdk</code>. Target evaluates the visitor and returns a redirect offer with <code>type: 'redirect'</code> and the destination URL in <code>content</code>.</p>
       </div>
-      <div class="trust-badge">
-        <div class="trust-badge-number">99.9%</div>
-        <div class="trust-badge-label">Uptime</div>
+      <div style="padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
+        <h3 style="color: #667eea; margin-bottom: 0.5rem;">2. ECID + SDID Generation</h3>
+        <p>Before processing the redirect, the server ensures an ECID exists (via <code>dpm.demdex.net</code> if needed) and generates an SDID using <code>@adobe-mcid/visitor-js-server</code>. These IDs are critical for stitching Target and Analytics data together.</p>
       </div>
-      <div class="trust-badge">
-        <div class="trust-badge-number">4.9/5</div>
-        <div class="trust-badge-label">Rating</div>
+      <div style="padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
+        <h3 style="color: #667eea; margin-bottom: 0.5rem;">3. A4T Hit Before Redirect</h3>
+        <p>The server <a href="https://github.com/johnsimmons-further/sst/blob/main/routes/pages.js#L16">sends the A4T display hit</a> to Adobe Analytics <strong>before</strong> issuing the redirect. This ensures the activity impression is captured even if the user doesn't complete the redirect:<br>
+        <code style="font-size: 0.8rem;">https://&lt;tracking-server&gt;/b/ss/&lt;rsid&gt;/0?pe=tnt&tnta=...&mid=...&pageName=sst:about</code></p>
+      </div>
+      <div style="padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
+        <h3 style="color: #667eea; margin-bottom: 0.5rem;">4. Server-Side Redirect</h3>
+        <p>After the A4T hit is sent, the server issues an HTTP 302 redirect to this landing page. Target automatically appends <code>mboxSession</code> and <code>adobe_mc_sdid</code> parameters to the redirect URL to maintain session continuity and analytics stitching.</p>
+      </div>
+      <div style="padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
+        <h3 style="color: #667eea; margin-bottom: 0.5rem;">5. Why Server-Side?</h3>
+        <p>Unlike client-side redirects that can cause flicker or be blocked by browsers, server-side redirects happen before any HTML is sent. The visitor experience is seamless—they simply arrive at the destination page with no visible redirect. It is as if they went directly to the redirected page in the first place.</p>
+      </div>
+      <div style="padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
+        <h3 style="color: #667eea; margin-bottom: 0.5rem;">6. A4T Data Flow</h3>
+        <p>The <code>tnta</code> token from Target (e.g., <code>647326:1:0|0,647326:1:0|2</code>) is sent via the Data Insertion API. This token contains the activity ID, experience ID, and offer ID—allowing Analytics to attribute this impression to the correct Target activity in A4T reports.</p>
       </div>
     </div>
-  </div>
-</section>
 
-<!-- Features Grid -->
-<div class="features-grid">
-  <div class="feature-card">
-    <div class="feature-icon">⚡</div>
-    <div class="feature-title">Lightning Fast</div>
-    <div class="feature-desc">Deploy in minutes, not months. Our platform gets you up and running instantly.</div>
-  </div>
-  <div class="feature-card">
-    <div class="feature-icon">🔒</div>
-    <div class="feature-title">Enterprise Security</div>
-    <div class="feature-desc">SOC 2 Type II certified with end-to-end encryption for all your data.</div>
-  </div>
-  <div class="feature-card">
-    <div class="feature-icon">📊</div>
-    <div class="feature-title">Real-time Analytics</div>
-    <div class="feature-desc">Track every metric that matters with our powerful dashboard.</div>
-  </div>
-  <div class="feature-card">
-    <div class="feature-icon">🔗</div>
-    <div class="feature-title">Easy Integrations</div>
-    <div class="feature-desc">Connect with 100+ tools you already use, from Salesforce to Slack.</div>
-  </div>
+    <div style="padding: 1.5rem; background: #e8f4f8; border-radius: 8px; border-left: 4px solid #667eea;">
+      <h3 style="margin-bottom: 1rem;">Redirect Activity Flow</h3>
+      <div style="font-family: monospace; font-size: 0.9rem; line-height: 1.8;">
+        <div>1. Visitor requests <code>/about</code></div>
+        <div>2. Server calls Target SDK → <code>getTargetOffers(['redirect'])</code></div>
+        <div>3. Target returns redirect offer with <code>type: 'redirect'</code></div>
+        <div>4. Server generates ECID/SDID if needed</div>
+        <div>5. Server sends A4T hit → <code>pe=tnt&tnta=...</code></div>
+        <div>6. Server responds with HTTP 302 → <code>/landingpage</code></div>
+        <div>7. Browser follows redirect, visitor sees this page</div>
+      </div>
+    </div>
+
+    <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+      <a href="https://experience.adobe.com/#/@searchdiscovery/target/activities" target="_blank" class="btn" style="background: #667eea; color: white; text-decoration: none;">
+        View Target Activities
+      </a>
+      <a href="https://www5.an.adobe.com/spa/?linkId=85477733-35b5-4b93-af18-21938c3bc252&dpc=pnw" target="_blank" class="btn" style="background: #f5a623; color: white; text-decoration: none;">
+        View Adobe Analytics A4T Dashboard
+      </a>
+      <a href="/about" class="btn" style="background: #27ae60; color: white; text-decoration: none;">
+        Test Redirect Again
+      </a>
+    </div>
+  </section>
 </div>
-
-<!-- Offer Section -->
-<section class="offer-section" id="offer">
-  <div class="offer-card">
-    <div class="countdown">⏰ Offer expires in: 23:59:42</div>
-    <div class="offer-header">
-      <div class="offer-title">Limited Time Offer</div>
-      <div class="offer-discount">50% OFF</div>
-    </div>
-    <div class="offer-body">
-      <p class="offer-description">Get started with our Pro plan at half the price. No credit card required.</p>
-      <ul class="offer-features">
-        <li>Unlimited users</li>
-        <li>24/7 support</li>
-        <li>Advanced analytics</li>
-        <li>Custom integrations</li>
-      </ul>
-      <div class="offer-cta">
-        <button class="btn-cta">Claim Your Discount</button>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Testimonial Section -->
-<section class="testimonial-section">
-  <div class="testimonial-card">
-    <p class="testimonial-quote">This platform completely transformed how we approach customer engagement. Our conversion rates increased by 340% in just 3 months.</p>
-    <div class="testimonial-author">Sarah Johnson</div>
-    <div class="testimonial-role">VP of Marketing, TechCorp Inc.</div>
-  </div>
-</section>
-
-<!-- Final CTA -->
-<section class="final-cta">
-  <h2>Ready to Get Started?</h2>
-  <p>Join thousands of companies already growing with our platform.</p>
-  <a href="#offer" class="btn-cta">Start Your Free Trial</a>
-</section>
 
 <% if (typeof isRedirectLanding !== 'undefined' && isRedirectLanding) { %>
 <!-- A4T Redirect Landing Page Data (for Launch to consume) -->
