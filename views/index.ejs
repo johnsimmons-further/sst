@@ -17,21 +17,21 @@
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
       <div style="padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
         <h3 style="color: #667eea; margin-bottom: 0.5rem;">1. Target SDK Request</h3>
-        <p>On the <code>/ index</code> route, the server (<code>server.js</code>) calls the homepage-hero mbox with <code>getTargetOffers(['homepage-hero'])</code> using the <code>@adobe/target-nodejs-sdk</code>. Target returns the an experience along with a <code>tnta</code> analytics token for counting the display event in Adobe Analytics A4T.</p>
+        <p>On the <code>/ index</code> route, the server (<code>server.js</code>) calls the <a href="https://github.com/johnsimmons-further/sst/blob/main/routes/index.js#L10">homepage-hero mbox</a> with <code>getTargetOffers(['homepage-hero'])</code> using the <code>@adobe/target-nodejs-sdk</code>. Target returns the an experience along with a <code>tnta</code> analytics token for counting the display event in Adobe Analytics A4T.</p>
       </div>
       <div style="padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
         <h3 style="color: #667eea; margin-bottom: 0.5rem;">2. ECID + SDID Generation</h3>
-        <p>For new visitors, the server calls <code>dpm.demdex.net/id</code> to generate an ECID, then sets the <code>AMCV_</code> cookie so browser and server share the same visitor identity.</p>
+        <p>For new visitors, the server calls <code>dpm.demdex.net/id</code> to <a href="https://github.com/johnsimmons-further/sst/blob/main/services/target.js#L59">generate an ECID</a>, then sets the <code>AMCV_</code> cookie so browser and server share the same visitor identity.</p>
         <p style="margin-top: 0.5rem;">The server also uses <code>@adobe-mcid/visitor-js-server</code> to generate an SDID (Supplemental Data ID) via <code>visitor.getSupplementalDataID('homepage-hero')</code>. The SDID is included in the A4T hit to stitch Target and Analytics data together.</p>
       </div>
       <div style="padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
         <h3 style="color: #667eea; margin-bottom: 0.5rem;">3. Server-Side A4T Hit</h3>
-        <p>Once a target response is received, the ECID exists, and before the HTML is rendered, the server fires a GET request to the Adobe Analytics Data Insertion API:<br>
+        <p>Once a target response is received, the ECID exists, and before the HTML is rendered, the <a href="https://github.com/johnsimmons-further/sst/blob/main/routes/index.js#L13"> server fires a GET request to the Adobe Analytics Data Insertion API</a>:<br>
         <code style="font-size: 0.8rem;">https://&lt;tracking-server&gt;/b/ss/&lt;rsid&gt;/0?pe=tnt&tnta=...&mid=...&pageName=sst:home</code>. This counts the display metrics and dimensions in Adobe Analytics A4T. This is a server side Adobe Analytics hit. There is no client side tracking of Target data that occurs for this mbox.</p>
       </div>
       <div style="padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
         <h3 style="color: #667eea; margin-bottom: 0.5rem;">4. HTML Rendered</h3>
-        <p>The <code>homepage-hero</code> content (headline, subheadline, backgroundColor, buttonText) is injected into this EJS template. The browser receives fully personalized HTML with no flicker.</p>
+        <p>The <code>homepage-hero</code> content (headline, subheadline, backgroundColor, buttonText) is <a href="https://github.com/johnsimmons-further/sst/blob/main/routes/index.js#L20" >injected into this EJS template</a>. The browser receives fully personalized HTML with no flicker.</p>
       </div>
       <div style="padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
         <h3 style="color: #667eea; margin-bottom: 0.5rem;">5. Client Side</h3>
