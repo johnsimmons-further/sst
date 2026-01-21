@@ -10,11 +10,11 @@ router.get('/', async (req, res) => {
   const visitorPayload = await getVisitorPayload(req, res, 'homepage-hero');
 
   // Send A4T display hit for each mbox with analytics data
-  for (const analyticsData of analytics) {
-    if (analyticsData.analyticsPayload?.tnta) {
-      await sendA4TDisplayHit(req, res, analyticsData, 'sst:home', visitorPayload);
-    }
-  }
+  // for (const analyticsData of analytics) {
+  //   if (analyticsData.analyticsPayload?.tnta) {
+  //     await sendA4TDisplayHit(req, res, analyticsData, 'sst:home', visitorPayload);
+  //   }
+  // }
 
   // Default content (fallback if no Target offer)
   const heroContent = offers['homepage-hero']?.content || {
